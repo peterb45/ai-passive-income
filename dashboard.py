@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
-import openai
-import os
+import requests
 
 # Set up Streamlit UI
 st.set_page_config(page_title="AI Passive Income Dashboard", layout="wide")
@@ -60,29 +59,26 @@ if st.button("Generate AI Recommendations"):
 st.sidebar.header("Future AI Enhancements")
 st.sidebar.write("✔ Auto-track revenue and trends\n✔ Predict profitable niches\n✔ AI chatbot for financial guidance")
 
-# AI Chatbot Integration with API Key Handling
-openai_api_key = os.getenv("OPENAI_API_KEY")
-organization_id = "org-wlULQcnWHmAqkeMHMJtbqpA1"  # Your OpenAI organization ID
+# AI Chatbot using Hugging Face API
+HF_API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct"
+headers = {"Authorization": f"Bearer {'your_huggingface_api_key_here'}"}  # Replace with your free HF API key
 
-if not openai_api_key:
-    st.warning("OpenAI API key is missing. Set it as an environment variable OPENAI_API_KEY.")
-else:
-    def ai_chatbot(prompt):
-        try:
-            client = openai.OpenAI(api_key=openai_api_key, organization=organization_id)
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",  # Switched to GPT-3.5 to avoid extra charges
-                messages=[{"role": "user", "content": prompt}]
-            )
-            return response.choices[0].message.content
-        except openai.OpenAIError as e:
-            return f"Error: {e}"
-
-    st.subheader("AI Passive Income Chatbot")
-    user_input = st.text_input("Ask me anything about passive income:")
-    if st.button("Get AI Advice"):
-        if user_input:
-            ai_response = ai_chatbot(user_input)
-            st.write(ai_response)
+def hf_chatbot(prompt):
+    payload = {"inputs": prompt}
+    try:
+        response = requests.post(HF_API_URL, headers=headers, json=payload)
+        if response.status_code == 200:
+            return response.json()[0]['generated_text']
         else:
-            st.write("Please enter a question.")
+            return f"Error: {response.json()}"
+    except Exception as e:
+        return f"Error: {e}"
+
+st.subheader("AI Passive Income Chatbot")
+user_input = st.text_input("Ask me anything about passive income:")
+if st.button("Get AI Advice"):
+    if user_input:
+        ai_response = hf_chatbot(user_input)
+        st.write(ai_response)
+    else:
+        st.write("Please enter a question.")
