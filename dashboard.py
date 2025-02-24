@@ -69,7 +69,7 @@ else:
         try:
             client = openai.OpenAI(api_key=openai_api_key)
             response = client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-4-turbo",
                 messages=[{"role": "user", "content": prompt}]
             )
             return response.choices[0].message.content
