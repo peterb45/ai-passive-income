@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import openai
+import os
 
 # Set up Streamlit UI
 st.set_page_config(page_title="AI Passive Income Dashboard", layout="wide")
@@ -21,17 +22,16 @@ income_streams = [
 selected_streams = st.sidebar.multiselect("Select passive income streams to track:", income_streams)
 
 # Sample Data for Simulation
-data = {
-    "Income Stream": selected_streams,
-    "Monthly Earnings ($)": [500, 700, 300, 1000, 1500, 400, 800][:len(selected_streams)],
-    "Effort Required (1-5)": [3, 3, 1, 3, 3, 4, 2][:len(selected_streams)],
-    "Investment ($)": [100, 200, 10000, 50, 100, 500, 20000][:len(selected_streams)]
-}
-df = pd.DataFrame(data)
-
-# Display Earnings Data
-st.subheader("Income Stream Performance")
-st.dataframe(df)
+if selected_streams:
+    data = {
+        "Income Stream": selected_streams,
+        "Monthly Earnings ($)": [500, 700, 300, 1000, 1500, 400, 800][:len(selected_streams)],
+        "Effort Required (1-5)": [3, 3, 1, 3, 3, 4, 2][:len(selected_streams)],
+        "Investment ($)": [100, 200, 10000, 50, 100, 500, 20000][:len(selected_streams)]
+    }
+    df = pd.DataFrame(data)
+    st.subheader("Income Stream Performance")
+    st.dataframe(df)
 
 # AI Insights & Recommendations
 if st.button("Generate AI Recommendations"):
@@ -60,19 +60,27 @@ if st.button("Generate AI Recommendations"):
 st.sidebar.header("Future AI Enhancements")
 st.sidebar.write("✔ Auto-track revenue and trends\n✔ Predict profitable niches\n✔ AI chatbot for financial guidance")
 
-# AI Chatbot Integration
-def ai_chatbot(prompt):
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response["choices"][0]["message"]["content"]
+# AI Chatbot Integration with API Key Handling
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    st.warning("OpenAI API key is missing. Set it as an environment variable OPENAI_API_KEY.")
+else:
+    def ai_chatbot(prompt):
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=[{"role": "user", "content": prompt}],
+                api_key=openai_api_key
+            )
+            return response["choices"][0]["message"]["content"]
+        except Exception as e:
+            return f"Error: {e}"
 
-st.subheader("AI Passive Income Chatbot")
-user_input = st.text_input("Ask me anything about passive income:")
-if st.button("Get AI Advice"):
-    if user_input:
-        ai_response = ai_chatbot(user_input)
-        st.write(ai_response)
-    else:
-        st.write("Please enter a question.")
+    st.subheader("AI Passive Income Chatbot")
+    user_input = st.text_input("Ask me anything about passive income:")
+    if st.button("Get AI Advice"):
+        if user_input:
+            ai_response = ai_chatbot(user_input)
+            st.write(ai_response)
+        else:
+            st.write("Please enter a question.")
