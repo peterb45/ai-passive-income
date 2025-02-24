@@ -67,12 +67,12 @@ if not openai_api_key:
 else:
     def ai_chatbot(prompt):
         try:
-            response = openai.ChatCompletion.create(
+            client = openai.OpenAI(api_key=openai_api_key)
+            response = client.chat.completions.create(
                 model="gpt-4",
-                messages=[{"role": "user", "content": prompt}],
-                api_key=openai_api_key
+                messages=[{"role": "user", "content": prompt}]
             )
-            return response["choices"][0]["message"]["content"]
+            return response.choices[0].message.content
         except Exception as e:
             return f"Error: {e}"
 
