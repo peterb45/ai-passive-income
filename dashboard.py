@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
+import os
 
 # Set up Streamlit UI
 st.set_page_config(page_title="AI Passive Income Dashboard", layout="wide")
@@ -61,7 +62,8 @@ st.sidebar.write("✔ Auto-track revenue and trends\n✔ Predict profitable nich
 
 # AI Chatbot using Hugging Face API
 HF_API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct"
-headers = {"Authorization": f"Bearer {'your_huggingface_api_key_here'}"}  # Replace with your free HF API key
+HF_API_KEY = os.getenv("HF_API_KEY")  # Load API Key from environment variables
+headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
 def hf_chatbot(prompt):
     payload = {"inputs": prompt}
