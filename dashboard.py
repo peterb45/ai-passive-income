@@ -62,18 +62,20 @@ st.sidebar.write("✔ Auto-track revenue and trends\n✔ Predict profitable nich
 
 # AI Chatbot Integration with API Key Handling
 openai_api_key = os.getenv("OPENAI_API_KEY")
+organization_id = "org-wlULQcnWHmAqkeMHMJtbqpA1"  # Your OpenAI organization ID
+
 if not openai_api_key:
     st.warning("OpenAI API key is missing. Set it as an environment variable OPENAI_API_KEY.")
 else:
     def ai_chatbot(prompt):
         try:
-            client = openai.OpenAI(api_key=openai_api_key)
+            client = openai.OpenAI(api_key=openai_api_key, organization=organization_id)
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-3.5-turbo",  # Switched to GPT-3.5 to avoid extra charges
                 messages=[{"role": "user", "content": prompt}]
             )
             return response.choices[0].message.content
-        except Exception as e:
+        except openai.OpenAIError as e:
             return f"Error: {e}"
 
     st.subheader("AI Passive Income Chatbot")
