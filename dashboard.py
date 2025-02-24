@@ -61,7 +61,7 @@ st.sidebar.header("Future AI Enhancements")
 st.sidebar.write("✔ Auto-track revenue and trends\n✔ Predict profitable niches\n✔ AI chatbot for financial guidance")
 
 # AI Chatbot using Hugging Face API
-HF_API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct"
+HF_API_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
 HF_API_KEY = os.getenv("HF_API_KEY")  # Load API Key from environment variables
 headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
